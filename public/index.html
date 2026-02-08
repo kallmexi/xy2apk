@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XY2APK - Konversi HTML ke APK Tanpa Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="notification-center" id="notificationCenter"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-mobile-alt"></i>
+                <div>
+                    <h1>XY2APK</h1>
+                    <div class="tagline">Konversi HTML ke APK tanpa login - Gratis dan Lengkap</div>
+                </div>
+            </div>
+            <div class="header-info">
+                <div class="server-status">
+                    <i class="fas fa-server"></i>
+                    <span id="serverStatus">Server Online</span>
+                </div>
+                <div class="feature-tag"><i class="fas fa-cloud-upload-alt"></i> Upload Icon</div>
+                <div class="feature-tag"><i class="fas fa-shield-alt"></i> Aman & Privasi</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Converter Card -->
+            <div class="converter-card">
+                <h2 class="section-title"><i class="fas fa-rocket"></i> Konversi HTML ke APK</h2>
+                <p class="section-subtitle">Unggah file HTML/ZIP dan icon, konfigurasi, dan download APK Anda!</p>
+                
+                <div class="converter-grid">
+                    <!-- Step 1: Upload -->
+                    <div class="step-card">
+                        <div class="step-header">
+                            <span class="step-number">1</span>
+                            <h3><i class="fas fa-file-upload"></i> Upload File</h3>
+                        </div>
+                        <div class="step-content">
+                            <!-- HTML File Upload -->
+                            <div class="upload-group">
+                                <label for="htmlFile"><i class="fas fa-file-code"></i> File HTML/ZIP</label>
+                                <div class="upload-area" id="htmlUploadArea">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Klik untuk upload file HTML atau ZIP</p>
+                                    <small>Maksimal 50MB. File utama harus bernama index.html</small>
+                                    <input type="file" id="htmlFile" accept=".html,.htm,.zip" hidden>
+                                </div>
+                                <div class="file-info" id="htmlFileInfo"></div>
+                            </div>
+
+                            <!-- Icon Upload -->
+                            <div class="upload-group">
+                                <label for="iconFile"><i class="fas fa-image"></i> Icon Aplikasi (Opsional)</label>
+                                <div class="upload-area" id="iconUploadArea">
+                                    <i class="fas fa-image"></i>
+                                    <p>Klik untuk upload icon aplikasi</p>
+                                    <small>PNG, JPG, GIF, WebP. Maksimal 10MB. Disarankan 512x512px</small>
+                                    <input type="file" id="iconFile" accept="image/*" hidden>
+                                </div>
+                                <div class="file-info" id="iconFileInfo">
+                                    <div class="icon-preview" id="iconPreview"></div>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="includeIcon" checked>
+                                    <label for="includeIcon">Sertakan icon dalam APK</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Configure -->
+                    <div class="step-card">
+                        <div class="step-header">
+                            <span class="step-number">2</span>
+                            <h3><i class="fas fa-cog"></i> Konfigurasi</h3>
+                        </div>
+                        <div class="step-content">
+                            <div class="config-grid">
+                                <div class="form-group">
+                                    <label for="appName"><i class="fas fa-font"></i> Nama Aplikasi</label>
+                                    <input type="text" id="appName" placeholder="Nama aplikasi Anda" value="Aplikasi Saya">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="packageName"><i class="fas fa-box"></i> Package Name</label>
+                                    <input type="text" id="packageName" placeholder="com.nama.aplikasi" value="com.example.myapp">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="appVersion"><i class="fas fa-code-branch"></i> Versi</label>
+                                    <input type="text" id="appVersion" placeholder="1.0.0" value="1.0.0">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="permissions"><i class="fas fa-shield-alt"></i> Izin Aplikasi</label>
+                                    <select id="permissions">
+                                        <option value="minimal">Minimal (Internet)</option>
+                                        <option value="standard" selected>Standard (Internet, Penyimpanan)</option>
+                                        <option value="full">Lengkap (Semua Izin)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="features-section">
+                                <label><i class="fas fa-sliders-h"></i> Fitur Tambahan:</label>
+                                <div class="features-grid">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="splashScreen" checked>
+                                        <label for="splashScreen"><i class="fas fa-play-circle"></i> Splash Screen</label>
+                                    </div>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="fullscreen" checked>
+                                        <label for="fullscreen"><i class="fas fa-expand-alt"></i> Fullscreen</label>
+                                    </div>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="admob">
+                                        <label for="admob"><i class="fas fa-ad"></i> AdMob</label>
+                                    </div>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="pushNotification">
+                                        <label for="pushNotification"><i class="fas fa-bell"></i> Push Notification</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Convert & Download -->
+                    <div class="step-card">
+                        <div class="step-header">
+                            <span class="step-number">3</span>
+                            <h3><i class="fas fa-file-download"></i> Hasil</h3>
+                        </div>
+                        <div class="step-content">
+                            <div class="convert-section">
+                                <button id="convertBtn" class="convert-btn">
+                                    <i class="fas fa-sync-alt"></i> 
+                                    <span>Konversi ke APK</span>
+                                </button>
+                                <p class="convert-note">
+                                    <i class="fas fa-info-circle"></i> Proses membutuhkan waktu beberapa detik
+                                </p>
+                            </div>
+
+                            <!-- Result Display -->
+                            <div class="result-section" id="resultSection">
+                                <div class="result-header">
+                                    <h4><i class="fas fa-check-circle"></i> APK Siap!</h4>
+                                    <span class="result-badge">Berhasil</span>
+                                </div>
+                                <div class="result-content">
+                                    <div class="apk-preview">
+                                        <div class="apk-icon" id="resultIcon">
+                                            <i class="fas fa-mobile-alt"></i>
+                                        </div>
+                                        <div class="apk-info">
+                                            <h5 id="resultAppName">Aplikasi Saya</h5>
+                                            <p id="resultPackage">com.example.myapp</p>
+                                            <p class="version">Versi <span id="resultVersion">1.0.0</span></p>
+                                            <p class="size"><i class="fas fa-database"></i> <span id="resultSize">12.5 MB</span></p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="result-actions">
+                                        <a href="#" id="downloadBtn" class="download-btn">
+                                            <i class="fas fa-download"></i> Download APK
+                                        </a>
+                                        <button id="shareBtn" class="share-btn">
+                                            <i class="fas fa-share-alt"></i> Share
+                                        </button>
+                                        <button id="newBtn" class="new-btn">
+                                            <i class="fas fa-plus"></i> Buat Baru
+                                        </button>
+                                    </div>
+
+                                    <div class="result-details">
+                                        <h6><i class="fas fa-info-circle"></i> Detail APK:</h6>
+                                        <ul>
+                                            <li><strong>Build ID:</strong> <span id="buildId">ABC123</span></li>
+                                            <li><strong>Waktu:</strong> <span id="buildTime">10 Detik</span></li>
+                                            <li><strong>Fitur:</strong> <span id="buildFeatures">Splash Screen, Fullscreen</span></li>
+                                            <li><strong>Izin:</strong> <span id="buildPermissions">Internet, Storage</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-section">
+                <h2 class="section-title"><i class="fas fa-star"></i> Keunggulan XY2APK</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                        <h4>Tidak Perlu Login</h4>
+                        <p>Gunakan langsung tanpa registrasi atau login. Privasi Anda aman.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h4>Upload Icon Custom</h4>
+                        <p>Unggah icon aplikasi custom dalam format PNG, JPG, GIF, atau WebP.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h4>Proses Cepat</h4>
+                        <p>Konversi HTML ke APK hanya dalam hitungan detik dengan teknologi modern.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h4>Konfigurasi Lengkap</h4>
+                        <p>Kustomisasi nama, icon, versi, izin, dan fitur aplikasi sesuai kebutuhan.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h4>Keamanan Terjamin</h4>
+                        <p>File Anda diproses secara aman dan tidak disimpan permanen di server.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-infinity"></i>
+                        </div>
+                        <h4>Gratis Tanpa Batas</h4>
+                        <p>Tidak ada batasan konversi. Gunakan sebanyak yang Anda butuhkan.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent APKs -->
+            <div class="recent-apks-section">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fas fa-history"></i> APK Terbaru</h2>
+                    <button id="refreshApks" class="refresh-btn">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="recent-apks-list" id="recentApks">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Memuat APK terbaru...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-info-circle"></i> Tentang XY2APK</h3>
+                    <p>Platform konversi HTML ke APK tanpa login yang cepat, aman, dan gratis. Dukung pengembang web membuat aplikasi Android dengan mudah.</p>
+                    <div class="stats">
+                        <div class="stat">
+                            <i class="fas fa-bolt"></i>
+                            <span>Proses Cepat</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Tanpa Login</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3><i class="fas fa-link"></i> Tautan Cepat</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-question-circle"></i> FAQ</a></li>
+                        <li><a href="#"><i class="fas fa-book"></i> Dokumentasi</a></li>
+                        <li><a href="#"><i class="fas fa-envelope"></i> Kontak</a></li>
+                        <li><a href="#"><i class="fas fa-bug"></i> Laporkan Bug</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3><i class="fas fa-code"></i> Teknologi</h3>
+                    <p>Dibangun dengan teknologi modern untuk performa terbaik:</p>
+                    <div class="tech-stack">
+                        <span class="tech-tag">Node.js</span>
+                        <span class="tech-tag">Vercel</span>
+                        <span class="tech-tag">Sharp</span>
+                        <span class="tech-tag">HTML5</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="copyright">
+                    <p>&copy; 2023 XY2APK - Konversi HTML ke APK Tanpa Login. All rights reserved.</p>
+                    <p class="powered-by">Powered by <strong>Kell</strong> - Platform development terdepan</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Syarat & Ketentuan</a>
+                    <a href="#">Kebijakan Privasi</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/script.js"></script>
+</body>
+</html>
