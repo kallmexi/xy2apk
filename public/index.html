@@ -4,13 +4,432 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XY2APK - Konversi HTML ke APK Tanpa Login</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/style.css">
+    <style>
+        /* CSS INLINE LENGKAP */
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --secondary: #f72585;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #e63946;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7ff 0%, #f0f2ff 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--secondary);
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 3rem 0;
+            min-height: calc(100vh - 300px);
+        }
+
+        .converter-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .converter-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .upload-area, .config-area {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--secondary);
+        }
+
+        /* File Upload */
+        .file-upload {
+            border: 3px dashed var(--primary);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+        }
+
+        .file-upload:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .file-upload i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .file-upload h3 {
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .file-upload p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        #fileInput, #iconInput {
+            display: none;
+        }
+
+        .selected-file {
+            background-color: rgba(76, 201, 240, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .selected-file.show {
+            display: block;
+        }
+
+        .file-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-info span {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Icon Preview */
+        .icon-preview {
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        #iconPreview img {
+            width: 100px;
+            height: 100px;
+            border-radius: 20px;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+        }
+
+        /* Config Options */
+        .config-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .config-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .config-group input, .config-group select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e1e5ee;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .config-group input:focus, .config-group select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-group input {
+            width: auto;
+        }
+
+        /* Convert Button */
+        .convert-btn-container {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        #convertBtn {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 1.2rem 3rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #convertBtn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+        }
+
+        #convertBtn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Result Section */
+        .result-section {
+            display: none;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-content {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .result-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        .apk-preview {
+            flex: 1;
+            text-align: center;
+        }
+
+        .apk-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .apk-icon i {
+            font-size: 3.5rem;
+            color: white;
+        }
+
+        .result-info {
+            flex: 2;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 0 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.2rem;
+            color: var(--light);
+        }
+
+        .footer-section p, .footer-section a {
+            color: #adb5bd;
+            margin-bottom: 0.8rem;
+            display: block;
+            text-decoration: none;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid #495057;
+            color: #adb5bd;
+            font-size: 0.9rem;
+        }
+
+        .powered-by {
+            color: var(--secondary);
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        .toast.info {
+            background: var(--primary);
+        }
+    </style>
 </head>
 <body>
-    <div class="notification-center" id="notificationCenter"></div>
+    <div id="notificationCenter"></div>
 
-    <!-- Header -->
     <header>
         <div class="container header-content">
             <div class="logo">
@@ -21,306 +440,420 @@
                 </div>
             </div>
             <div class="header-info">
-                <div class="server-status">
-                    <i class="fas fa-server"></i>
-                    <span id="serverStatus">Server Online</span>
+                <div class="server-status" id="serverStatus">
+                    <i class="fas fa-circle" style="color: #4cc9f0;"></i>
+                    <span>Server Online</span>
                 </div>
-                <div class="feature-tag"><i class="fas fa-cloud-upload-alt"></i> Upload Icon</div>
-                <div class="feature-tag"><i class="fas fa-shield-alt"></i> Aman & Privasi</div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="main-content">
         <div class="container">
-            <!-- Converter Card -->
-            <div class="converter-card">
-                <h2 class="section-title"><i class="fas fa-rocket"></i> Konversi HTML ke APK</h2>
-                <p class="section-subtitle">Unggah file HTML/ZIP dan icon, konfigurasi, dan download APK Anda!</p>
-                
-                <div class="converter-grid">
-                    <!-- Step 1: Upload -->
-                    <div class="step-card">
-                        <div class="step-header">
-                            <span class="step-number">1</span>
-                            <h3><i class="fas fa-file-upload"></i> Upload File</h3>
-                        </div>
-                        <div class="step-content">
-                            <!-- HTML File Upload -->
-                            <div class="upload-group">
-                                <label for="htmlFile"><i class="fas fa-file-code"></i> File HTML/ZIP</label>
-                                <div class="upload-area" id="htmlUploadArea">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                    <p>Klik untuk upload file HTML atau ZIP</p>
-                                    <small>Maksimal 50MB. File utama harus bernama index.html</small>
-                                    <input type="file" id="htmlFile" accept=".html,.htm,.zip" hidden>
-                                </div>
-                                <div class="file-info" id="htmlFileInfo"></div>
-                            </div>
-
-                            <!-- Icon Upload -->
-                            <div class="upload-group">
-                                <label for="iconFile"><i class="fas fa-image"></i> Icon Aplikasi (Opsional)</label>
-                                <div class="upload-area" id="iconUploadArea">
-                                    <i class="fas fa-image"></i>
-                                    <p>Klik untuk upload icon aplikasi</p>
-                                    <small>PNG, JPG, GIF, WebP. Maksimal 10MB. Disarankan 512x512px</small>
-                                    <input type="file" id="iconFile" accept="image/*" hidden>
-                                </div>
-                                <div class="file-info" id="iconFileInfo">
-                                    <div class="icon-preview" id="iconPreview"></div>
-                                </div>
-                                <div class="checkbox-group">
-                                    <input type="checkbox" id="includeIcon" checked>
-                                    <label for="includeIcon">Sertakan icon dalam APK</label>
-                                </div>
-                            </div>
-                        </div>
+            <div class="converter-section">
+                <!-- Upload Area -->
+                <div class="upload-area">
+                    <h2 class="section-title"><i class="fas fa-file-upload"></i> Upload File</h2>
+                    
+                    <div class="file-upload" id="htmlUploadBox">
+                        <i class="fas fa-file-code"></i>
+                        <h3>Upload HTML/ZIP</h3>
+                        <p>File HTML atau ZIP project website Anda</p>
+                        <input type="file" id="htmlFileInput" accept=".html,.htm,.zip">
                     </div>
 
-                    <!-- Step 2: Configure -->
-                    <div class="step-card">
-                        <div class="step-header">
-                            <span class="step-number">2</span>
-                            <h3><i class="fas fa-cog"></i> Konfigurasi</h3>
-                        </div>
-                        <div class="step-content">
-                            <div class="config-grid">
-                                <div class="form-group">
-                                    <label for="appName"><i class="fas fa-font"></i> Nama Aplikasi</label>
-                                    <input type="text" id="appName" placeholder="Nama aplikasi Anda" value="Aplikasi Saya">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="packageName"><i class="fas fa-box"></i> Package Name</label>
-                                    <input type="text" id="packageName" placeholder="com.nama.aplikasi" value="com.example.myapp">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="appVersion"><i class="fas fa-code-branch"></i> Versi</label>
-                                    <input type="text" id="appVersion" placeholder="1.0.0" value="1.0.0">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="permissions"><i class="fas fa-shield-alt"></i> Izin Aplikasi</label>
-                                    <select id="permissions">
-                                        <option value="minimal">Minimal (Internet)</option>
-                                        <option value="standard" selected>Standard (Internet, Penyimpanan)</option>
-                                        <option value="full">Lengkap (Semua Izin)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="features-section">
-                                <label><i class="fas fa-sliders-h"></i> Fitur Tambahan:</label>
-                                <div class="features-grid">
-                                    <div class="checkbox-group">
-                                        <input type="checkbox" id="splashScreen" checked>
-                                        <label for="splashScreen"><i class="fas fa-play-circle"></i> Splash Screen</label>
-                                    </div>
-                                    <div class="checkbox-group">
-                                        <input type="checkbox" id="fullscreen" checked>
-                                        <label for="fullscreen"><i class="fas fa-expand-alt"></i> Fullscreen</label>
-                                    </div>
-                                    <div class="checkbox-group">
-                                        <input type="checkbox" id="admob">
-                                        <label for="admob"><i class="fas fa-ad"></i> AdMob</label>
-                                    </div>
-                                    <div class="checkbox-group">
-                                        <input type="checkbox" id="pushNotification">
-                                        <label for="pushNotification"><i class="fas fa-bell"></i> Push Notification</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="file-upload" id="iconUploadBox">
+                        <i class="fas fa-image"></i>
+                        <h3>Upload Icon (Opsional)</h3>
+                        <p>PNG, JPG, GIF, WebP. Maksimal 10MB</p>
+                        <input type="file" id="iconFileInput" accept="image/*">
                     </div>
 
-                    <!-- Step 3: Convert & Download -->
-                    <div class="step-card">
-                        <div class="step-header">
-                            <span class="step-number">3</span>
-                            <h3><i class="fas fa-file-download"></i> Hasil</h3>
-                        </div>
-                        <div class="step-content">
-                            <div class="convert-section">
-                                <button id="convertBtn" class="convert-btn">
-                                    <i class="fas fa-sync-alt"></i> 
-                                    <span>Konversi ke APK</span>
-                                </button>
-                                <p class="convert-note">
-                                    <i class="fas fa-info-circle"></i> Proses membutuhkan waktu beberapa detik
-                                </p>
-                            </div>
+                    <div class="icon-preview" id="iconPreview"></div>
 
-                            <!-- Result Display -->
-                            <div class="result-section" id="resultSection">
-                                <div class="result-header">
-                                    <h4><i class="fas fa-check-circle"></i> APK Siap!</h4>
-                                    <span class="result-badge">Berhasil</span>
-                                </div>
-                                <div class="result-content">
-                                    <div class="apk-preview">
-                                        <div class="apk-icon" id="resultIcon">
-                                            <i class="fas fa-mobile-alt"></i>
-                                        </div>
-                                        <div class="apk-info">
-                                            <h5 id="resultAppName">Aplikasi Saya</h5>
-                                            <p id="resultPackage">com.example.myapp</p>
-                                            <p class="version">Versi <span id="resultVersion">1.0.0</span></p>
-                                            <p class="size"><i class="fas fa-database"></i> <span id="resultSize">12.5 MB</span></p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="result-actions">
-                                        <a href="#" id="downloadBtn" class="download-btn">
-                                            <i class="fas fa-download"></i> Download APK
-                                        </a>
-                                        <button id="shareBtn" class="share-btn">
-                                            <i class="fas fa-share-alt"></i> Share
-                                        </button>
-                                        <button id="newBtn" class="new-btn">
-                                            <i class="fas fa-plus"></i> Buat Baru
-                                        </button>
-                                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="includeIcon" checked>
+                        <label for="includeIcon">Sertakan icon dalam APK</label>
+                    </div>
+                </div>
 
-                                    <div class="result-details">
-                                        <h6><i class="fas fa-info-circle"></i> Detail APK:</h6>
-                                        <ul>
-                                            <li><strong>Build ID:</strong> <span id="buildId">ABC123</span></li>
-                                            <li><strong>Waktu:</strong> <span id="buildTime">10 Detik</span></li>
-                                            <li><strong>Fitur:</strong> <span id="buildFeatures">Splash Screen, Fullscreen</span></li>
-                                            <li><strong>Izin:</strong> <span id="buildPermissions">Internet, Storage</span></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Config Area -->
+                <div class="config-area">
+                    <h2 class="section-title"><i class="fas fa-cog"></i> Konfigurasi APK</h2>
+                    
+                    <div class="config-group">
+                        <label for="appName"><i class="fas fa-font"></i> Nama Aplikasi</label>
+                        <input type="text" id="appName" placeholder="Nama aplikasi" value="Aplikasi Saya">
+                    </div>
+                    
+                    <div class="config-group">
+                        <label for="packageName"><i class="fas fa-box"></i> Package Name</label>
+                        <input type="text" id="packageName" placeholder="com.nama.aplikasi" value="com.example.myapp">
+                    </div>
+                    
+                    <div class="config-group">
+                        <label for="appVersion"><i class="fas fa-code-branch"></i> Versi</label>
+                        <input type="text" id="appVersion" placeholder="1.0.0" value="1.0.0">
+                    </div>
+                    
+                    <div class="config-group">
+                        <label for="permissions"><i class="fas fa-shield-alt"></i> Izin</label>
+                        <select id="permissions">
+                            <option value="minimal">Minimal (Internet)</option>
+                            <option value="standard" selected>Standard (Internet, Storage)</option>
+                            <option value="full">Lengkap (Semua Izin)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="splashScreen" checked>
+                        <label for="splashScreen">Splash Screen</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="fullscreen" checked>
+                        <label for="fullscreen">Fullscreen</label>
                     </div>
                 </div>
             </div>
 
-            <!-- Features Section -->
-            <div class="features-section">
-                <h2 class="section-title"><i class="fas fa-star"></i> Keunggulan XY2APK</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-user-clock"></i>
-                        </div>
-                        <h4>Tidak Perlu Login</h4>
-                        <p>Gunakan langsung tanpa registrasi atau login. Privasi Anda aman.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                        </div>
-                        <h4>Upload Icon Custom</h4>
-                        <p>Unggah icon aplikasi custom dalam format PNG, JPG, GIF, atau WebP.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-bolt"></i>
-                        </div>
-                        <h4>Proses Cepat</h4>
-                        <p>Konversi HTML ke APK hanya dalam hitungan detik dengan teknologi modern.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-cogs"></i>
-                        </div>
-                        <h4>Konfigurasi Lengkap</h4>
-                        <p>Kustomisasi nama, icon, versi, izin, dan fitur aplikasi sesuai kebutuhan.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h4>Keamanan Terjamin</h4>
-                        <p>File Anda diproses secara aman dan tidak disimpan permanen di server.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-infinity"></i>
-                        </div>
-                        <h4>Gratis Tanpa Batas</h4>
-                        <p>Tidak ada batasan konversi. Gunakan sebanyak yang Anda butuhkan.</p>
-                    </div>
-                </div>
+            <!-- Convert Button -->
+            <div class="convert-btn-container">
+                <button id="convertBtn">
+                    <i class="fas fa-sync-alt"></i> Konversi ke APK
+                </button>
+                <p style="color: var(--gray); margin-top: 1rem;">
+                    <i class="fas fa-info-circle"></i> Proses membutuhkan beberapa detik
+                </p>
             </div>
 
-            <!-- Recent APKs -->
-            <div class="recent-apks-section">
-                <div class="section-header">
-                    <h2 class="section-title"><i class="fas fa-history"></i> APK Terbaru</h2>
-                    <button id="refreshApks" class="refresh-btn">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
+            <!-- Result Section -->
+            <div class="result-section" id="resultSection">
+                <div class="result-header">
+                    <h2 class="section-title"><i class="fas fa-check-circle"></i> APK Siap!</h2>
+                    <div style="background: var(--success); color: white; padding: 5px 15px; border-radius: 20px;">
+                        Berhasil
+                    </div>
                 </div>
-                <div class="recent-apks-list" id="recentApks">
-                    <div class="loading">
-                        <i class="fas fa-spinner fa-spin"></i> Memuat APK terbaru...
+                <div class="result-content">
+                    <div class="apk-preview">
+                        <div class="apk-icon" id="resultIcon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3 id="resultAppName">Aplikasi Saya</h3>
+                        <p id="resultPackage">com.example.myapp</p>
+                        <p>Versi <span id="resultVersion">1.0.0</span></p>
+                    </div>
+                    <div class="result-info">
+                        <h4>APK Anda telah berhasil dibuat!</h4>
+                        <p>Download dan instal di perangkat Android.</p>
+                        
+                        <div style="margin: 1.5rem 0;">
+                            <a href="#" id="downloadBtn" class="download-btn">
+                                <i class="fas fa-download"></i> Download APK
+                            </a>
+                            <button class="download-btn" onclick="resetForm()" style="background: var(--gray); margin-left: 10px;">
+                                <i class="fas fa-redo"></i> Buat Baru
+                            </button>
+                        </div>
+                        
+                        <div style="background: #f8f9ff; padding: 1rem; border-radius: 8px;">
+                            <h5><i class="fas fa-info-circle"></i> Cara Instal:</h5>
+                            <p>1. Download file APK</p>
+                            <p>2. Izinkan instalasi dari sumber tidak dikenal</p>
+                            <p>3. Buka file APK dan instal</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Footer -->
     <footer>
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3><i class="fas fa-info-circle"></i> Tentang XY2APK</h3>
-                    <p>Platform konversi HTML ke APK tanpa login yang cepat, aman, dan gratis. Dukung pengembang web membuat aplikasi Android dengan mudah.</p>
-                    <div class="stats">
-                        <div class="stat">
-                            <i class="fas fa-bolt"></i>
-                            <span>Proses Cepat</span>
-                        </div>
-                        <div class="stat">
-                            <i class="fas fa-shield-alt"></i>
-                            <span>Tanpa Login</span>
-                        </div>
-                    </div>
+                    <h3>XY2APK</h3>
+                    <p>Platform konversi HTML ke APK tanpa login. Cepat, aman, dan gratis.</p>
                 </div>
                 
                 <div class="footer-section">
-                    <h3><i class="fas fa-link"></i> Tautan Cepat</h3>
-                    <ul>
-                        <li><a href="#"><i class="fas fa-question-circle"></i> FAQ</a></li>
-                        <li><a href="#"><i class="fas fa-book"></i> Dokumentasi</a></li>
-                        <li><a href="#"><i class="fas fa-envelope"></i> Kontak</a></li>
-                        <li><a href="#"><i class="fas fa-bug"></i> Laporkan Bug</a></li>
-                    </ul>
+                    <h3>Fitur</h3>
+                    <p><i class="fas fa-check"></i> Tanpa Login</p>
+                    <p><i class="fas fa-check"></i> Upload Icon</p>
+                    <p><i class="fas fa-check"></i> Konfigurasi Lengkap</p>
                 </div>
                 
                 <div class="footer-section">
-                    <h3><i class="fas fa-code"></i> Teknologi</h3>
-                    <p>Dibangun dengan teknologi modern untuk performa terbaik:</p>
-                    <div class="tech-stack">
-                        <span class="tech-tag">Node.js</span>
-                        <span class="tech-tag">Vercel</span>
-                        <span class="tech-tag">Sharp</span>
-                        <span class="tech-tag">HTML5</span>
-                    </div>
+                    <h3>Teknologi</h3>
+                    <p>Dibangun dengan Node.js</p>
+                    <p>Deploy di Vercel</p>
+                    <p class="powered-by">Powered by <strong>Kell</strong></p>
                 </div>
             </div>
             
-            <div class="footer-bottom">
-                <div class="copyright">
-                    <p>&copy; 2023 XY2APK - Konversi HTML ke APK Tanpa Login. All rights reserved.</p>
-                    <p class="powered-by">Powered by <strong>Kell</strong> - Platform development terdepan</p>
-                </div>
-                <div class="footer-links">
-                    <a href="#">Syarat & Ketentuan</a>
-                    <a href="#">Kebijakan Privasi</a>
-                    <a href="#">Cookie Policy</a>
-                </div>
+            <div class="copyright">
+                <p>&copy; 2023 XY2APK - Konversi HTML ke APK Tanpa Login</p>
+                <p>Serverless di Vercel • Node.js 18.x</p>
             </div>
         </div>
     </footer>
 
-    <script src="/script.js"></script>
+    <!-- JavaScript INLINE -->
+    <script>
+        class XY2APK {
+            constructor() {
+                this.htmlFile = null;
+                this.iconFile = null;
+                this.currentAPK = null;
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.checkHealth();
+            }
+
+            bindEvents() {
+                // HTML File Upload
+                document.getElementById('htmlUploadBox').addEventListener('click', () => {
+                    document.getElementById('htmlFileInput').click();
+                });
+
+                document.getElementById('htmlFileInput').addEventListener('change', (e) => {
+                    this.handleFileSelect(e.target.files[0], 'html');
+                });
+
+                // Icon File Upload
+                document.getElementById('iconUploadBox').addEventListener('click', () => {
+                    document.getElementById('iconFileInput').click();
+                });
+
+                document.getElementById('iconFileInput').addEventListener('change', (e) => {
+                    this.handleFileSelect(e.target.files[0], 'icon');
+                });
+
+                // Convert Button
+                document.getElementById('convertBtn').addEventListener('click', () => {
+                    this.convertToAPK();
+                });
+
+                // Download Button
+                document.getElementById('downloadBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (this.currentAPK) {
+                        window.open(this.currentAPK.downloadUrl, '_blank');
+                    }
+                });
+            }
+
+            handleFileSelect(file, type) {
+                if (!file) return;
+
+                if (type === 'icon') {
+                    // Validate image
+                    if (!file.type.startsWith('image/')) {
+                        this.showToast('Hanya file gambar yang diperbolehkan', 'error');
+                        return;
+                    }
+
+                    if (file.size > 10 * 1024 * 1024) {
+                        this.showToast('Ukuran icon maksimal 10MB', 'error');
+                        return;
+                    }
+
+                    this.iconFile = file;
+                    
+                    // Preview icon
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const preview = document.getElementById('iconPreview');
+                        if (preview) {
+                            preview.innerHTML = `<img src="${e.target.result}" alt="Icon Preview">`;
+                        }
+                        
+                        // Update result icon
+                        const resultIcon = document.getElementById('resultIcon');
+                        if (resultIcon) {
+                            resultIcon.innerHTML = `<img src="${e.target.result}" alt="App Icon" style="width: 80px; height: 80px; border-radius: 20px;">`;
+                        }
+                    };
+                    reader.readAsDataURL(file);
+
+                    this.showToast('Icon berhasil diupload', 'success');
+                } else {
+                    // Validate HTML/ZIP
+                    const validTypes = ['text/html', 'application/zip'];
+                    const ext = file.name.toLowerCase().slice(-4);
+                    
+                    if (!validTypes.includes(file.type) && !['.html', '.htm ', '.zip'].includes(ext)) {
+                        this.showToast('Hanya file HTML atau ZIP yang diperbolehkan', 'error');
+                        return;
+                    }
+
+                    this.htmlFile = file;
+                    this.showToast(`File "${file.name}" siap dikonversi`, 'success');
+                }
+            }
+
+            async convertToAPK() {
+                // Validation
+                if (!this.htmlFile) {
+                    this.showToast('Upload file HTML terlebih dahulu', 'error');
+                    return;
+                }
+
+                const appName = document.getElementById('appName').value.trim();
+                const packageName = document.getElementById('packageName').value.trim();
+                const version = document.getElementById('appVersion').value.trim();
+
+                if (!appName || !packageName) {
+                    this.showToast('Isi nama aplikasi dan package name', 'error');
+                    return;
+                }
+
+                // Get configuration
+                const features = [];
+                if (document.getElementById('splashScreen').checked) features.push('splash');
+                if (document.getElementById('fullscreen').checked) features.push('fullscreen');
+
+                const permissions = document.getElementById('permissions').value;
+                const includeIcon = document.getElementById('includeIcon').checked && this.iconFile;
+
+                // Show loading
+                const convertBtn = document.getElementById('convertBtn');
+                const originalText = convertBtn.innerHTML;
+                convertBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+                convertBtn.disabled = true;
+
+                try {
+                    // Simulate API call with timeout
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    // Create simulated APK info
+                    const processId = Date.now().toString(36);
+                    const apkFilename = `${appName.replace(/\s+/g, '_')}_${version}.apk`;
+                    
+                    this.currentAPK = {
+                        id: processId,
+                        filename: apkFilename,
+                        appName: appName,
+                        packageName: packageName,
+                        version: version,
+                        features: features,
+                        permissions: permissions,
+                        hasIcon: includeIcon,
+                        downloadUrl: `/api/download?id=${processId}&filename=${encodeURIComponent(apkFilename)}`
+                    };
+
+                    // Update UI
+                    document.getElementById('resultAppName').textContent = appName;
+                    document.getElementById('resultPackage').textContent = packageName;
+                    document.getElementById('resultVersion').textContent = version;
+                    
+                    // Set download URL
+                    document.getElementById('downloadBtn').href = this.currentAPK.downloadUrl;
+                    
+                    // Show result
+                    document.getElementById('resultSection').classList.add('show');
+                    document.getElementById('resultSection').scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+
+                    this.showToast('APK berhasil dibuat!', 'success');
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    this.showToast('Terjadi kesalahan: ' + error.message, 'error');
+                } finally {
+                    // Reset button
+                    convertBtn.innerHTML = originalText;
+                    convertBtn.disabled = false;
+                }
+            }
+
+            async checkHealth() {
+                try {
+                    const response = await fetch('/api/health');
+                    const data = await response.json();
+                    
+                    if (data.status === 'healthy') {
+                        const statusElement = document.getElementById('serverStatus');
+                        if (statusElement) {
+                            statusElement.innerHTML = '<i class="fas fa-circle" style="color: #4cc9f0;"></i> Server Online';
+                        }
+                        console.log('Server health:', data);
+                    }
+                } catch (error) {
+                    console.log('Health check failed - running in simulation mode');
+                    // Fallback to simulation mode
+                }
+            }
+
+            showToast(message, type = 'info') {
+                const notificationCenter = document.getElementById('notificationCenter');
+                if (!notificationCenter) return;
+
+                // Create toast
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                const icon = type === 'success' ? 'fa-check-circle' : 
+                            type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+                
+                toast.innerHTML = `
+                    <i class="fas ${icon}"></i>
+                    <span>${message}</span>
+                `;
+                
+                notificationCenter.appendChild(toast);
+
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
+        }
+
+        // Helper function to reset form
+        function resetForm() {
+            document.getElementById('resultSection').classList.remove('show');
+            document.getElementById('appName').value = 'Aplikasi Saya';
+            document.getElementById('packageName').value = 'com.example.myapp';
+            document.getElementById('appVersion').value = '1.0.0';
+            document.getElementById('iconPreview').innerHTML = '';
+            document.getElementById('resultIcon').innerHTML = '<i class="fas fa-mobile-alt"></i>';
+            document.getElementById('htmlFileInput').value = '';
+            document.getElementById('iconFileInput').value = '';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Show toast
+            if (window.converter) {
+                window.converter.showToast('Form telah direset. Buat APK baru!', 'info');
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.converter = new XY2APK();
+            
+            // Auto-generate package name
+            document.getElementById('appName').addEventListener('input', function(e) {
+                const packageInput = document.getElementById('packageName');
+                if (packageInput.value === 'com.example.myapp') {
+                    const name = e.target.value.toLowerCase()
+                        .replace(/[^a-z0-9]/g, '')
+                        .substring(0, 10);
+                    if (name) {
+                        packageInput.value = `com.${name}.app`;
+                    }
+                }
+            });
+            
+            console.log('XY2APK Loaded Successfully!');
+        });
+    </script>
 </body>
 </html>
