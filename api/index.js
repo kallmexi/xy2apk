@@ -1,200 +1,252 @@
 const express = require('express');
 const app = express();
 
-// Enable CORS
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    next();
-});
-
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check endpoint - GET /api/health
+// CORS Middleware
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  next();
+});
+
+// Logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
+
+// API Routes
 app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'healthy',
-        service: 'XY2APK Converter',
-        version: '1.0.0',
-        timestamp: new Date().toISOString(),
-        environment: process.env.VERCEL_ENV || 'production',
-        endpoints: {
-            health: 'GET /api/health',
-            upload: 'POST /api/upload',
-            convert: 'POST /api/convert',
-            download: 'GET /api/download'
-        }
-    });
+  res.json({
+    status: 'healthy',
+    service: 'XY2APK Converter',
+    version: '2.0.0',
+    timestamp: new Date().toISOString(),
+    nodeVersion: process.version,
+    environment: process.env.NODE_ENV || 'production',
+    endpoints: [
+      'GET  /api/health',
+      'POST /api/upload',
+      'POST /api/convert',
+      'GET  /api/download',
+      'GET  /api/recent-apks'
+    ]
+  });
 });
 
-// Upload endpoint - POST /api/upload
 app.post('/api/upload', (req, res) => {
-    console.log('Upload request received');
-    try {
-        // Simulate file upload
-        const fileId = Date.now();
-        
-        res.json({
-            success: true,
-            message: 'File uploaded successfully (simulated)',
-            files: {
-                htmlFile: {
-                    filename: `upload_${fileId}.html`,
-                    originalname: req.body.filename || 'uploaded.html',
-                    size: 2048,
-                    mimetype: 'text/html'
-                }
-            }
-        });
-    } catch (error) {
-        console.error('Upload error:', error);
-        res.status(500).json({ 
-            success: false,
-            error: 'Upload failed'
-        });
-    }
+  try {
+    console.log('Upload request body:', req.body);
+    
+    // Simulate file upload
+    const uploadId = Date.now();
+    const filename = req.body?.filename || `upload_${uploadId}.html`;
+    
+    res.json({
+      success: true,
+      message: 'File uploaded successfully',
+      file: {
+        id: uploadId,
+        filename: filename,
+        originalname: filename,
+        size: 1024 * 1024, // 1MB
+        mimetype: 'text/html',
+        uploadedAt: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Upload failed',
+      message: error.message
+    });
+  }
 });
 
-// Convert endpoint - POST /api/convert
 app.post('/api/convert', (req, res) => {
-    console.log('Convert request received:', req.body);
+  try {
+    console.log('Convert request:', req.body);
     
-    try {
-        const { appName, packageName, version = '1.0.0' } = req.body;
-        
-        if (!appName || !packageName) {
-            return res.status(400).json({
-                success: false,
-                error: 'App name and package name are required'
-            });
-        }
-        
-        const processId = Date.now().toString(36);
-        const apkFilename = `${appName.replace(/[^a-z0-9]/gi, '_')}_${version}.apk`;
-        
-        // Get current URL for download link
-        const protocol = req.headers['x-forwarded-proto'] || 'http';
-        const host = req.headers['x-forwarded-host'] || req.headers.host;
-        const baseUrl = `${protocol}://${host}`;
-        
-        res.json({
-            success: true,
-            message: 'APK created successfully!',
-            apkInfo: {
-                id: processId,
-                filename: apkFilename,
-                appName,
-                packageName,
-                version,
-                size: Math.floor(Math.random() * 5000000) + 1000000, // 1-5MB
-                features: req.body.features || [],
-                permissions: req.body.permissions || 'standard',
-                hasIcon: req.body.includeIcon || false,
-                timestamp: new Date().toISOString(),
-                downloadUrl: `${baseUrl}/api/download?id=${processId}&filename=${encodeURIComponent(apkFilename)}`
-            }
-        });
-    } catch (error) {
-        console.error('Convert error:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Conversion failed: ' + error.message
-        });
+    const { appName, packageName, version = '1.0.0', features = [] } = req.body;
+    
+    if (!appName || !packageName) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: appName and packageName are required'
+      });
     }
+    
+    const buildId = Date.now().toString(36);
+    const apkFilename = `${appName.replace(/[^a-z0-9]/gi, '_')}_${version}.apk`;
+    
+    // Get base URL
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const host = req.headers['x-forwarded-host'] || req.headers.host || 'xy2apk.vercel.app';
+    const baseUrl = `${protocol}://${host}`;
+    
+    const apkInfo = {
+      id: buildId,
+      filename: apkFilename,
+      appName: appName,
+      packageName: packageName,
+      version: version,
+      size: 2 * 1024 * 1024, // 2MB
+      features: features,
+      permissions: req.body.permissions || 'standard',
+      hasIcon: req.body.includeIcon || false,
+      timestamp: new Date().toISOString(),
+      downloadUrl: `${baseUrl}/api/download?id=${buildId}&filename=${encodeURIComponent(apkFilename)}`,
+      directDownloadUrl: `/api/download?id=${buildId}&filename=${encodeURIComponent(apkFilename)}`
+    };
+    
+    res.json({
+      success: true,
+      message: 'APK created successfully!',
+      apkInfo: apkInfo,
+      notes: [
+        'This is a simulated APK for demonstration',
+        'In production, this would generate a real Android APK',
+        'Powered by XY2APK & Kell'
+      ]
+    });
+    
+  } catch (error) {
+    console.error('Convert error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Conversion failed',
+      message: error.message
+    });
+  }
 });
 
-// Download endpoint - GET /api/download
 app.get('/api/download', (req, res) => {
-    console.log('Download request:', req.query);
+  try {
+    const { id, filename } = req.query;
     
-    try {
-        const { id, filename } = req.query;
-        const downloadFilename = filename || 'app.apk';
-        
-        if (!id) {
-            return res.status(400).json({
-                success: false,
-                error: 'Build ID is required'
-            });
-        }
-        
-        // Create simulated APK content
-        const apkContent = `XY2APK Generated APK
-========================
-
+    console.log('Download request:', { id, filename });
+    
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        error: 'Build ID is required'
+      });
+    }
+    
+    const downloadFilename = filename || `app_${id}.apk`;
+    
+    // Create APK-like content
+    const apkContent = `Android APK - XY2APK Generated
+===============================
 Build ID: ${id}
 Filename: ${downloadFilename}
-Generated: ${new Date().toLocaleString()}
-Platform: Android
-Status: Simulated APK for testing
+Generated: ${new Date().toISOString()}
+Status: Simulation APK
 
-This is a simulated APK file generated by XY2APK.
+APPLICATION INFO:
+- Generated by XY2APK Converter
+- Platform: Android
+- Type: APK (Android Package)
+- Format: Simulation
+
+TECHNICAL DETAILS:
+- Node.js: ${process.version}
+- Server: Vercel Functions
+- Timestamp: ${Date.now()}
+
+NOTES:
+This is a simulated APK file for demonstration purposes.
+The XY2APK converter interface is fully functional.
 In production, this would be a real Android APK file.
 
-Application Details:
-- Generated by XY2APK Converter
-- Powered by Kell
-- Serverless on Vercel
+Thank you for using XY2APK!
+Powered by Kell - Innovation Platform
 
-Note: This file is for demonstration purposes only.
-To get a real APK, implement Cordova/Android SDK integration.
-
-Thank you for using XY2APK!`;
-        
-        res.setHeader('Content-Type', 'application/vnd.android.package-archive');
-        res.setHeader('Content-Disposition', `attachment; filename="${downloadFilename}"`);
-        res.setHeader('X-APK-ID', id);
-        res.setHeader('X-Generated-By', 'XY2APK');
-        
-        res.send(apkContent);
-        
-    } catch (error) {
-        console.error('Download error:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Download failed: ' + error.message
-        });
-    }
+---
+END OF FILE`;
+    
+    // Set headers for file download
+    res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+    res.setHeader('Content-Disposition', `attachment; filename="${downloadFilename}"`);
+    res.setHeader('X-APK-ID', id);
+    res.setHeader('X-Generator', 'XY2APK');
+    res.setHeader('X-Powered-By', 'Kell');
+    
+    res.send(apkContent);
+    
+  } catch (error) {
+    console.error('Download error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Download failed',
+      message: error.message
+    });
+  }
 });
 
-// Recent APKs endpoint - GET /api/recent-apks
 app.get('/api/recent-apks', (req, res) => {
-    res.json({
-        success: true,
-        count: 0,
-        apks: [],
-        message: 'No recent APKs found (simulation mode)'
-    });
+  res.json({
+    success: true,
+    count: 3,
+    apks: [
+      {
+        id: Date.now().toString(36),
+        filename: 'Sample_App_1.0.0.apk',
+        appName: 'Sample App',
+        packageName: 'com.sample.app',
+        version: '1.0.0',
+        size: 1500000,
+        created: new Date(Date.now() - 3600000).toISOString(),
+        downloadUrl: '/api/download?id=sample1&filename=Sample_App_1.0.0.apk'
+      },
+      {
+        id: (Date.now() - 86400000).toString(36),
+        filename: 'Test_Application_2.1.0.apk',
+        appName: 'Test Application',
+        packageName: 'com.test.application',
+        version: '2.1.0',
+        size: 2100000,
+        created: new Date(Date.now() - 86400000).toISOString(),
+        downloadUrl: '/api/download?id=sample2&filename=Test_Application_2.1.0.apk'
+      }
+    ],
+    message: 'Recent APKs loaded successfully'
+  });
 });
 
 // Serve static files from public directory
 app.use(express.static('public'));
 
-// Handle all other routes - serve index.html
-app.get('*', (req, res) => {
-    if (req.path.startsWith('/api/')) {
-        // If it's an API route that doesn't exist
-        res.status(404).json({
-            success: false,
-            error: `API endpoint ${req.path} not found`
-        });
-    } else {
-        // Serve the SPA for all other routes
-        const path = require('path');
-        res.sendFile(path.join(__dirname, '../public/index.html'));
-    }
+// 404 handler for API routes
+app.use('/api/*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    error: 'API endpoint not found',
+    path: req.originalUrl,
+    availableEndpoints: [
+      '/api/health',
+      '/api/upload',
+      '/api/convert',
+      '/api/download',
+      '/api/recent-apks'
+    ]
+  });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error('Server error:', err);
-    res.status(500).json({
-        success: false,
-        error: 'Internal server error',
-        message: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
+// Serve SPA for all other routes
+app.get('*', (req, res) => {
+  const path = require('path');
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 module.exports = app;
